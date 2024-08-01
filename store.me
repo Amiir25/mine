@@ -1,32 +1,20 @@
-list_t *add_node_end(list_t **head, const char *str)
-{
-	list_t *ptr, *new_node;
+section .data
+    format db "%s", 10, 0
+    message db "Hello, Holberton", 0
 
-	new_node = malloc(sizeof(list_t));
-	if (new_node == NULL)
-	{
-		return (NULL);
-	}
+section .text
+    global main
 
-	new_node->str = strdup(str);
-	if (new_node->str == NULL)
-	{
-		free(new_node);
-		return (NULL);
-	}
+main:
+    push rbp
+    mov rdi, format
+    mov rsi, message
+    mov rax, 0 ; can be xor rax, rax
+    call printf
 
-	new_node->len = strlen(str);
-	new_node->next = NULL;
-
-	ptr = *head;
-	while (ptr->next != NULL)
-	{
-		ptr = ptr->next;
-	}
-	ptr->next = new_node;
-
-	return (new_node);
-}
+    pop rbp
+    mov rax, 0 ; normal, no error, return value
+    ret
 
 -----------------------------------------------------------
 ghp #_# smn6x # pomg # UKipYC # aye0fkPq # JEBWZXV # 2omY2S

@@ -1,19 +1,31 @@
-char *create_array(unsigned int size, char c)
+list_t *add_node_end(list_t **head, const char *str)
 {
-	unsigned int i;
-	char *one_char = (char *)malloc(size);
+	list_t *ptr, *new_node;
 
-	if (size == 0)
+	new_node = malloc(sizeof(list_t));
+	if (new_node == NULL)
 	{
 		return (NULL);
 	}
 
-	for (i = 0; i < size; i++)
+	new_node->str = strdup(str);
+	if (new_node->str == NULL)
 	{
-		one_char[i] = c;
+		free(new_node);
+		return (NULL);
 	}
 
-	return (one_char);
+	new_node->len = strlen(str);
+	new_node->next = NULL;
+
+	ptr = *head;
+	while (ptr->next != NULL)
+	{
+		ptr = ptr->next;
+	}
+	ptr->next = new_node;
+
+	return (new_node);
 }
 
 -----------------------------------------------------------

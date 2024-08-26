@@ -32,14 +32,14 @@ ssize_t getline(char **lineptr, size_t *n, FILE *stream)
 
         (*lineptr)[num_read++] = buffer[pos++];
 
-        if (num_read >= *n) {
+        /* Cast num_read to size_t to avoid signedness mismatch */
+        if ((size_t)num_read >= *n) {
             *n += 1024;
             *lineptr = realloc(*lineptr, *n);
             if (*lineptr == NULL)
                 return (-1);
         }
 
-        /* Separate the assignment from the condition */
         newline = strchr(*lineptr, '\n');
         if (newline != NULL) {
             *newline = '\0';

@@ -1,54 +1,40 @@
 #include "shell.h"
 
 /**
- * getline - Custom implementation of the getline function
- * @lineptr: Pointer to the buffer where the line is stored
- * @n: Size of the buffer
- * @stream: Stream to read from (usually stdin)
+ * execute_command - Executes a command
+ * @args: Array of arguments (command and its arguments)
  *
- * Return: Number of characters read, or -1 on failure
+ * Return: 1 if the shell should continue running, 0 if it should terminate
  */
-ssize_t getline(char **lineptr, size_t *n, FILE *stream)
+int execute_command(char **args)
 {
-    static char buffer[1024];
-    static size_t pos, length;
-    ssize_t num_read = 0;
-    char *newline;
+    const char *builtin_str[] = {"exit", "env", "cd", "setenv", "unsetenv", "alias"};
+    int (*builtin_func[])(char **) = {
+        &shell_exit, &shell_env, &shell_cd, &shell_setenv, &shell_unsetenv, &shell_alias
+    };
+    int num_builtins = sizeof(builtin_str) / sizeof(char *);
+    char *command;
+    int i;
 
-    if (*lineptr == NULL || *n == 0) {
-        *n = 1024;
-        *lineptr = malloc(*n);
-        if (*lineptr == NULL)
-            return (-1);
+    if (args[0] == NULL)
+        return (1);
+
+    for (i = 0; i < num_builtins; i++) {
+        if (_strcmp(args[0], builtin_str[i]) == 0)
+            return ((*builtin_func[i])(args));
     }
 
-    while (1) {
-        if (pos >= length) {
-            pos = 0;
-            length = read(fileno(stream), buffer, sizeof(buffer));
-            if (length <= 0)
-                return (-1);
-        }
-
-        (*lineptr)[num_read++] = buffer[pos++];
-
-        /* Cast num_read to size_t to avoid signedness mismatch */
-        if ((size_t)num_read >= *n) {
-            *n += 1024;
-            *lineptr = realloc(*lineptr, *n);
-            if (*lineptr == NULL)
-                return (-1);
-        }
-
-        newline = strchr(*lineptr, '\n');
-        if (newline != NULL) {
-            *newline = '\0';
-            break;
-        }
+    command = search_path(args[0]);
+    if (command) {
+        launch_process(args);
+        free(command);
+    } else {
+        fprintf(stderr, "%s: command not found\n", args[0]);
     }
 
-    return (num_read);
+    return (1);
 }
+
 
 
 -----------------------------------------------------------

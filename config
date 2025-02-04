@@ -1,0 +1,4 @@
+Host alx-server
+    HostName 100.26.171.159
+    User ubuntu
+    PasswordAuthentication no
